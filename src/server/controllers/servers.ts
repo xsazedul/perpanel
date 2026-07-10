@@ -75,6 +75,7 @@ export const createServer = async (req: Request, res: Response) => {
   if (user.role !== "admin") {
     return res.status(403).json({ error: "Only admins can create servers" });
   }
+
   const { name, ram, port, version, theme, cpu, disk, owner, ipAlias, type } = req.body;
   if (!name || !ram || !port || !version || !cpu || !disk) {
     res.status(400).json({ error: "Missing required fields" });
@@ -85,11 +86,11 @@ export const createServer = async (req: Request, res: Response) => {
   const serverData = {
     id,
     name,
-    owner: owner || user.id, // Support assigning owner at creation
-    ram,
-    cpu,
-    disk,
-    port,
+    owner: owner || user.id,
+    ram: Number(ram),
+    cpu: Number(cpu),
+    disk: Number(disk),
+    port: Number(port),
     ipAlias: ipAlias || "",
     type: type || "PAPER",
     version,
@@ -101,17 +102,29 @@ export const createServer = async (req: Request, res: Response) => {
 
   const servers = await readJSON("servers.json") || [];
   servers.push(serverData);
+  await fs.ensureDir(path.join(process.cwd(), ".data"));
   await writeJSON("servers.json", servers);
 
   try {
     const containerId = await createServerContainer(serverData);
     serverData.containerId = containerId;
     serverData.status = "offline";
-    await writeJSON("servers.json", Object.assign(servers, servers.map((s:any)=>s.id===id?serverData:s)));
-    res.json(serverData);
+
+    const serverIndex = servers.findIndex((s: any) => s.id === id);
+    if (serverIndex >= 0) {
+      servers[serverIndex] = serverData;
+    }
+
+    await writeJSON("servers.json", servers);
+    return res.status(201).json(serverData);
   } catch (err: any) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
+    console.error("Create server container failed:", err);
+    const serverIndex = servers.findIndex((s: any) => s.id === id);
+    if (serverIndex >= 0) {
+      servers[serverIndex] = { ...serverData, status: "offline", containerId: null };
+    }
+    await writeJSON("servers.json", servers);
+    return res.status(201).json({ ...serverData, status: "offline", containerId: null, warning: err.message });
   }
 };
 

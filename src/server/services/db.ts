@@ -6,6 +6,7 @@ const DATA_DIR = path.join(process.cwd(), ".data");
 export const readJSON = async (filename: string) => {
   const filePath = path.join(DATA_DIR, filename);
   try {
+    await fs.ensureDir(DATA_DIR);
     return await fs.readJson(filePath);
   } catch (err) {
     return null;
@@ -14,5 +15,6 @@ export const readJSON = async (filename: string) => {
 
 export const writeJSON = async (filename: string, data: any) => {
   const filePath = path.join(DATA_DIR, filename);
+  await fs.ensureDir(DATA_DIR);
   await fs.writeJson(filePath, data, { spaces: 2 });
 };

@@ -19,8 +19,10 @@ router.put("/:id/ipalias", updateIpAlias);
 
 router.put("/:id/version", changeServerVersion);
 
+router.get("/:id/start", startServer);
 router.post("/:id/start", startServer);
 router.post("/:id/stop", stopServer);
+router.get("/:id/restart", restartServer);
 router.post("/:id/restart", restartServer);
 router.post("/:id/command", sendCommand);
 

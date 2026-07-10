@@ -18,12 +18,16 @@ export default function Login() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    setIsLoading(true);
     try {
       const res = await axios.post("/api/auth/login", { username, password });
       login(res.data.token, res.data.user);
       navigate("/");
     } catch (err: any) {
       setError(err.response?.data?.error || "Login failed");
+    } finally {
+      setIsLoading(false);
     }
   };
 
