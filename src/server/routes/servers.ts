@@ -39,6 +39,6 @@ router.post("/:id/backups", createBackup);
 router.get("/:id/backups/:filename", downloadBackup);
 router.delete("/:id/backups/:filename", deleteBackup);
 
-export default router;
-
 router.post("/:id/plugins/install", installPlugin);
+
+export default router;

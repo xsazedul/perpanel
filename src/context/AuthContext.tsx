@@ -9,20 +9,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (token) {
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      axios.get("/api/auth/me").then(res => {
-        setUser(res.data.user);
+    const initializeAuth = async () => {
+      if (!token) {
         setLoading(false);
-      }).catch(() => {
+        return;
+      }
+
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      try {
+        const res = await axios.get("/api/auth/me");
+        setUser(res.data.user);
+      } catch {
         setToken(null);
         localStorage.removeItem("jtg_token");
         setUser(null);
+        delete axios.defaults.headers.common["Authorization"];
+      } finally {
         setLoading(false);
-      });
-    } else {
-      setLoading(false);
-    }
+      }
+    };
+
+    initializeAuth();
   }, [token]);
 
   useEffect(() => {
@@ -45,6 +52,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setToken(token);
     setUser(user);
     localStorage.setItem("jtg_token", token);
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   };
 
   const logout = () => {

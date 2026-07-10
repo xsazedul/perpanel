@@ -70,7 +70,13 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json({ limit: "50gb" }));
 app.use(express.urlencoded({ extended: true, limit: "50gb" }));
-app.use(cors());
+app.use(cors({
+  origin: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+}));
+app.options("*", cors());
 
 import apiRoutes from "./src/server/routes/api.js";
 app.use("/api", apiRoutes);

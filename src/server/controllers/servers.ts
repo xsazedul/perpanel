@@ -598,7 +598,10 @@ export const installPlugin = async (req: Request, res: Response) => {
           const response = await axios({ url: req.body.downloadUrl, method: 'GET', responseType: 'stream' });
           const writer = fs.createWriteStream(filePath);
           response.data.pipe(writer);
-          await new Promise((resolve, reject) => { writer.on('finish', resolve); writer.on('error', reject); });
+          await new Promise<void>((resolve, reject) => {
+            writer.on('finish', () => resolve());
+            writer.on('error', reject);
+          });
         }
         return res.json({ success: true, message: "Plugin installed successfully" });
      } catch(e) {
@@ -664,8 +667,8 @@ export const installPlugin = async (req: Request, res: Response) => {
     const writer = fs.createWriteStream(filePath);
     response.data.pipe(writer);
 
-    await new Promise((resolve, reject) => {
-      writer.on('finish', resolve);
+    await new Promise<void>((resolve, reject) => {
+      writer.on('finish', () => resolve());
       writer.on('error', reject);
     });
 
