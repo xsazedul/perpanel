@@ -46,7 +46,7 @@ The project provides a fast, responsive, and easy-to-use dashboard for creating,
 
 # 🖼️ Preview
 
-> Add screenshots or GIFs here.
+
 
 ```
 Dashboard
