@@ -11,7 +11,7 @@ const metaEnv = (import.meta as any).env;
 const apiBaseURL = metaEnv?.VITE_API_BASE_URL || apiPathPrefix;
 
 axios.defaults.baseURL = apiBaseURL;
-axios.defaults.withCredentials = true;
+axios.defaults.withCredentials = false;
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

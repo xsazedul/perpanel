@@ -74,9 +74,9 @@ app.use(cors({
   origin: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
+  credentials: false,
 }));
-app.options("*", cors());
+app.options("*", cors({ origin: true, credentials: false }));
 
 import apiRoutes from "./src/server/routes/api.js";
 app.use("/api", apiRoutes);
